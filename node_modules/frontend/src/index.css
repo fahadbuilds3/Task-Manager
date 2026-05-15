@@ -1,0 +1,8 @@
+@custom-variant dark (&:where(.dark, .dark *));
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@import "tailwindcss";
+body {
+  min-width: 320px;
+}
