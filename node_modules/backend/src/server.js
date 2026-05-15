@@ -3,13 +3,11 @@ require('dotenv').config();
 
 // Import the Express app
 const app = require('./app');
-// Import the database connection function
 const connectDB = require('./config/db');
 
-// Set the port from environment variables or use 5000 by default
 const PORT = process.env.PORT || 5000;
 
-// Connect to the database and start the server
+// Ensure database is connected before starting server
 connectDB()
   .then(() => {
     app.listen(PORT, () => {
