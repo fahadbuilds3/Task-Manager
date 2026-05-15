@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const authApi = axios.create({
-  baseURL: "https://task-manager-production-e8f4.up.railway.app",
+  baseURL: "https://task-manager-production-e8f4.up.railway.app/api/auth",
   // baseURL: "http://localhost:5000/api/auth",
   headers: {
     'Content-Type': 'application/json',
