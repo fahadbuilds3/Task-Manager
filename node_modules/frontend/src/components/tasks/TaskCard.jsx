@@ -3,29 +3,23 @@ import { updateTask } from "../../api/taskApi"; // Assumes this API exists
 
 const getPriorityClass = (priority = '') => {
   const normalizedPriority = priority.toLowerCase()
-
   if (normalizedPriority === 'high') {
     return 'bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-100'
   }
-
   if (normalizedPriority === 'medium') {
     return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100'
   }
-
   return 'bg-emerald-50 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-100'
 }
 
 const getStatusClass = (status = '') => {
   const normalizedStatus = status.toLowerCase()
-
   if (normalizedStatus === 'completed' || normalizedStatus === 'done') {
     return 'bg-emerald-50 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-100'
   }
-
   if (normalizedStatus === 'in progress') {
     return 'bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-100'
   }
-
   return 'bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300'
 }
 
@@ -33,7 +27,6 @@ const formatLabel = (value) => {
   if (!value) {
     return 'Pending'
   }
-
   return value
     .split(' ')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -43,7 +36,6 @@ const formatLabel = (value) => {
 // Util: Format the due date professionally (e.g., Mar 18, 2024)
 const formatDueDate = (dueDate) => {
   if (!dueDate) return ''
-
   const dateObj = typeof dueDate === 'string' ? new Date(dueDate) : dueDate
   if (isNaN(dateObj)) return ''
   return dateObj.toLocaleDateString(undefined, {
@@ -124,14 +116,25 @@ function TaskCard({ task, className = '', onDelete, onComplete, onUpdate }) {
   return (
     <article
       className={[
-        // Responsive padding, space, and positioning
         'relative rounded-lg border border-stone-200 bg-white dark:bg-stone-900 p-4 sm:p-5 shadow-sm shadow-stone-200/60 dark:shadow-stone-900/30',
         className,
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      ].filter(Boolean).join(' ')}
     >
-      <div className="flex flex-col md:flex-row gap-6 md:gap-4 md:items-start md:justify-between">
+      {/* Fixed delete button */}
+      {!editing && onDelete && (
+        <div className="absolute top-3 right-3 z-20">
+          <button
+            type="button"
+            onClick={onDelete}
+            aria-label="Delete Task"
+            className="min-h-[40px] bg-red-600 hover:bg-red-700 text-white dark:bg-red-700 dark:hover:bg-red-600 px-4 py-2 rounded-md text-sm font-semibold shadow focus:outline-none focus:ring-2 focus:ring-red-400 transition"
+          >
+            Delete
+          </button>
+        </div>
+      )}
+
+      <div className="flex flex-col gap-6 md:gap-4">
         <div className="flex-1 min-w-0 break-words">
           {editing ? (
             <form onSubmit={handleSave} className="space-y-3">
@@ -218,60 +221,51 @@ function TaskCard({ task, className = '', onDelete, onComplete, onUpdate }) {
           )}
         </div>
 
-        {/* Action & Status section */}
-        <div className="flex flex-wrap gap-2 w-full md:w-auto md:flex-nowrap md:justify-end md:items-center mt-4 md:mt-0">
-          {editing ? null : (
-            <>
-              {/* Priority & Status Badges */}
-              <span
-                className={`inline-flex min-h-8 items-center rounded-full px-3 text-sm font-bold max-w-full truncate ${getPriorityClass(
-                  priority,
-                )}`}
-                title={formatLabel(priority)}
-              >
-                {formatLabel(priority)}
-              </span>
-              <span
-                className={`inline-flex min-h-8 items-center rounded-full px-3 text-sm font-bold max-w-full truncate ${getStatusClass(
-                  status,
-                )}`}
-                title={formatLabel(status)}
-              >
-                {formatLabel(status)}
-              </span>
-              {/* Edit Button */}
+        {!editing &&
+        <div className="flex flex-col gap-3">
+          {/* Row: badges */}
+          <div className="flex flex-wrap gap-2 items-center">
+            <span
+              className={`inline-flex min-h-8 items-center rounded-full px-3 text-sm font-bold max-w-full truncate ${getPriorityClass(priority)}`}
+              title={formatLabel(priority)}
+            >
+              {formatLabel(priority)}
+            </span>
+            <span
+              className={`inline-flex min-h-8 items-center rounded-full px-3 text-sm font-bold max-w-full truncate ${getStatusClass(status)}`}
+              title={formatLabel(status)}
+            >
+              {formatLabel(status)}
+            </span>
+          </div>
+          {/* Row: Edit Button */}
+          <div className="flex w-full">
+            <button
+              type="button"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-700 dark:hover:bg-blue-600 px-4 py-2 rounded-md text-sm font-medium shadow focus:outline-none focus:ring-2 focus:ring-blue-400 transition min-h-[40px]"
+              onClick={handleEditClick}
+              aria-label="Edit Task"
+            >
+              Edit
+            </button>
+          </div>
+
+          {/* Mark Complete Button: Centered */}
+          {onComplete && !isCompleted && (
+            <div className="flex justify-center w-full">
               <button
                 type="button"
-                className="min-h-[40px] flex-1 md:flex-none grow-0 shrink-0 bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-700 dark:hover:bg-blue-600 px-4 py-2 rounded-md text-sm font-medium shadow focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                onClick={handleEditClick}
-                aria-label="Edit Task"
+                onClick={onComplete}
+                aria-label="Mark Complete"
+                className="min-h-[40px] bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-700 dark:hover:bg-emerald-600 px-4 py-2 rounded-md text-sm font-semibold shadow focus:outline-none focus:ring-2 focus:ring-emerald-400 transition"
+                style={{ minWidth: 145 }}
               >
-                Edit
+                Mark Complete
               </button>
-              {/* Responsive Delete/Complete Buttons */}
-              {onDelete && (
-                <button
-                  type="button"
-                  onClick={onDelete}
-                  aria-label="Delete Task"
-                  className="min-h-[40px] flex-1 md:flex-none grow-0 shrink-0 bg-red-600 hover:bg-red-700 text-white dark:bg-red-700 dark:hover:bg-red-600 px-4 py-2 rounded-md text-sm font-semibold shadow focus:outline-none focus:ring-2 focus:ring-red-400 transition"
-                >
-                  Delete
-                </button>
-              )}
-              {onComplete && !isCompleted && (
-                <button
-                  type="button"
-                  onClick={onComplete}
-                  aria-label="Mark Complete"
-                  className="min-h-[40px] flex-1 md:flex-none grow-0 shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-700 dark:hover:bg-emerald-600 px-4 py-2 rounded-md text-sm font-semibold shadow focus:outline-none focus:ring-2 focus:ring-emerald-400 transition"
-                >
-                  Mark Complete
-                </button>
-              )}
-            </>
+            </div>
           )}
         </div>
+        }
       </div>
     </article>
   )
