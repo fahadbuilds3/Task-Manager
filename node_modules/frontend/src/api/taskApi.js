@@ -2,6 +2,7 @@ import axios from 'axios'
 
 const taskApi = axios.create({
   baseURL: "https://task-manager-production-e8f4.up.railway.app/api/tasks",
+  // baseURL: "http://localhost:5000/api/tasks",
   headers: {
     'Content-Type': 'application/json',
   },
