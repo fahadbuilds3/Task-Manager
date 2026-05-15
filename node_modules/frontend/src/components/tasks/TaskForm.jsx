@@ -15,6 +15,8 @@ function TaskForm({ onTaskCreated }) {
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  const [autoClose, setAutoClose] = useState(false)
+
   const handleChange = (event) => {
     const { name, value } = event.target
 
@@ -25,19 +27,21 @@ function TaskForm({ onTaskCreated }) {
   }
 
   // Handles successful task creation side effects
-  const handleSuccess = (task) => {
+  const handleSuccess = async (task) => {
     setFormData(initialFormData)
-    // Ensure callback runs after successful creation
+    // Call parent's refresh & close flow (awaited as requested)
     if (onTaskCreated) {
-      onTaskCreated(task)
+      await onTaskCreated()
     }
     toast.success('Task created successfully!')
+    setAutoClose(true)
   }
 
   const handleSubmit = async (event) => {
     event.preventDefault()
     setError('')
     setIsSubmitting(true)
+    setAutoClose(false)
 
     try {
       // handle empty string for dueDate
@@ -46,8 +50,8 @@ function TaskForm({ onTaskCreated }) {
         dueDate: formData.dueDate ? formData.dueDate : undefined,
       }
       const task = await createTask(taskPayload)
-      // Make sure success side effects complete before submitting is set to false
-      handleSuccess(task)
+      // Professionally await all success-related effects before unlocking form
+      await handleSuccess(task)
     } catch (apiError) {
       const errorMsg =
         apiError.response?.data?.message || 'Unable to create task. Please try again.'
@@ -57,6 +61,12 @@ function TaskForm({ onTaskCreated }) {
       setIsSubmitting(false)
     }
   }
+
+  // Optional: auto-close form after successful creation
+  // by signaling to parent with effect
+  // This works if onTaskCreated triggers hiding the form via parent's state
+
+  if (autoClose) return null
 
   return (
     <form

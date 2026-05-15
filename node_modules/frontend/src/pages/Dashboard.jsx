@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { getTasks, deleteTask, updateTask } from '../api/taskApi'
@@ -22,7 +22,8 @@ function Dashboard() {
     navigate('/login')
   }
 
-  const onUpdate = async () => {
+  // Professional, isolated fetchTasks with setTasks
+  const fetchTasks = useCallback(async () => {
     setIsLoading(true)
     setError('')
     try {
@@ -30,14 +31,13 @@ function Dashboard() {
       setTasks(taskData)
     } catch (apiError) {
       setError(
-        apiError.response?.data?.message ||
-        'Unable to load tasks. Please try again.'
+        apiError?.response?.data?.message || 'Unable to load tasks. Please try again.'
       )
       setTasks([])
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
 
   const handleDelete = async (taskId) => {
     if (!window.confirm('Are you sure you want to delete this task?')) return
@@ -45,11 +45,10 @@ function Dashboard() {
     try {
       setError('')
       await deleteTask(taskId)
-      await onUpdate()
+      await fetchTasks()
     } catch (apiError) {
       setError(
-        apiError.response?.data?.message ||
-        'Unable to delete task. Please try again.'
+        apiError?.response?.data?.message || 'Unable to delete task. Please try again.'
       )
     } finally {
       setDeletingTaskId(null)
@@ -61,27 +60,26 @@ function Dashboard() {
     try {
       setError('')
       await updateTask(taskId, { status: 'completed' })
-      await onUpdate()
+      await fetchTasks()
     } catch (apiError) {
       setError(
-        apiError.response?.data?.message ||
-        'Unable to update task. Please try again.'
+        apiError?.response?.data?.message || 'Unable to update task. Please try again.'
       )
     } finally {
       setUpdatingTaskId(null)
     }
   }
 
-  // Handler for successful task creation to close the form and update list
+  // After task creation, automatically refresh tasks and close form
   const handleTaskCreated = async () => {
-    await onUpdate()
+    await fetchTasks()
     setShowTaskForm(false)
   }
 
   useEffect(() => {
-    onUpdate()
+    fetchTasks()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [fetchTasks])
 
   const stats = useMemo(() => {
     const completedTasks = tasks.filter((task) => {
@@ -174,7 +172,7 @@ function Dashboard() {
       {/* Responsive Task Form, only show if showTaskForm is true */}
       {showTaskForm && (
         <div className="w-full max-w-full md:max-w-lg mx-auto flex flex-col gap-2">
-          <TaskForm onUpdate={handleTaskCreated} />
+          <TaskForm onTaskCreated={handleTaskCreated} />
           <button
             type="button"
             className="mt-1 self-end px-4 py-2 rounded-md bg-stone-200 text-stone-800 hover:bg-stone-300 text-xs md:text-sm font-semibold transition border border-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-300"

@@ -5,28 +5,28 @@ const getPriorityClass = (priority = '') => {
   const normalizedPriority = priority.toLowerCase()
 
   if (normalizedPriority === 'high') {
-    return 'bg-rose-100 text-rose-800'
+    return 'bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-100'
   }
 
   if (normalizedPriority === 'medium') {
-    return 'bg-amber-100 text-amber-800'
+    return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100'
   }
 
-  return 'bg-emerald-50 text-emerald-800'
+  return 'bg-emerald-50 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-100'
 }
 
 const getStatusClass = (status = '') => {
   const normalizedStatus = status.toLowerCase()
 
   if (normalizedStatus === 'completed' || normalizedStatus === 'done') {
-    return 'bg-emerald-50 text-emerald-800'
+    return 'bg-emerald-50 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-100'
   }
 
   if (normalizedStatus === 'in progress') {
-    return 'bg-sky-100 text-sky-800'
+    return 'bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-100'
   }
 
-  return 'bg-stone-100 text-stone-700'
+  return 'bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300'
 }
 
 const formatLabel = (value) => {
@@ -125,7 +125,7 @@ function TaskCard({ task, className = '', onDelete, onComplete, onUpdate }) {
     <article
       className={[
         // Responsive padding, space, and positioning
-        'relative rounded-lg border border-stone-200 bg-white p-4 sm:p-5 shadow-sm shadow-stone-200/60',
+        'relative rounded-lg border border-stone-200 bg-white dark:bg-stone-900 p-4 sm:p-5 shadow-sm shadow-stone-200/60 dark:shadow-stone-900/30',
         className,
       ]
         .filter(Boolean)
@@ -137,7 +137,7 @@ function TaskCard({ task, className = '', onDelete, onComplete, onUpdate }) {
             <form onSubmit={handleSave} className="space-y-3">
               <input
                 name="title"
-                className="block w-full rounded border border-stone-300 px-3 py-2 text-xl font-bold text-stone-950 focus:border-blue-400 focus:ring-blue-400 truncate"
+                className="block w-full rounded border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 px-3 py-2 text-xl font-bold text-stone-950 dark:text-white focus:border-blue-400 focus:ring-blue-400 truncate"
                 value={editValues.title}
                 onChange={handleChange}
                 required
@@ -146,7 +146,7 @@ function TaskCard({ task, className = '', onDelete, onComplete, onUpdate }) {
               />
               <textarea
                 name="description"
-                className="block w-full rounded border border-stone-300 px-3 py-2 text-stone-700 focus:border-blue-400 focus:ring-blue-400 resize-none"
+                className="block w-full rounded border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 px-3 py-2 text-stone-700 dark:text-stone-200 focus:border-blue-400 focus:ring-blue-400 resize-none"
                 value={editValues.description}
                 onChange={handleChange}
                 placeholder="Description"
@@ -156,7 +156,7 @@ function TaskCard({ task, className = '', onDelete, onComplete, onUpdate }) {
               <div className="flex flex-col sm:flex-row gap-2">
                 <select
                   name="priority"
-                  className="rounded border px-2 py-1 text-sm focus:border-blue-400 focus:ring-blue-400 truncate"
+                  className="rounded border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 px-2 py-1 text-sm dark:text-stone-200 focus:border-blue-400 focus:ring-blue-400 truncate"
                   value={editValues.priority}
                   onChange={handleChange}
                 >
@@ -166,7 +166,7 @@ function TaskCard({ task, className = '', onDelete, onComplete, onUpdate }) {
                 </select>
                 <select
                   name="status"
-                  className="rounded border px-2 py-1 text-sm focus:border-blue-400 focus:ring-blue-400 truncate"
+                  className="rounded border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 px-2 py-1 text-sm dark:text-stone-200 focus:border-blue-400 focus:ring-blue-400 truncate"
                   value={editValues.status}
                   onChange={handleChange}
                 >
@@ -177,25 +177,25 @@ function TaskCard({ task, className = '', onDelete, onComplete, onUpdate }) {
               </div>
               {formattedDueDate && (
                 <div>
-                  <span className="inline-flex items-center rounded px-2 py-0.5 bg-slate-100 text-slate-700 text-xs font-medium truncate">
+                  <span className="inline-flex items-center rounded px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-medium truncate">
                     Due: <span className="ml-1 font-semibold">{formattedDueDate}</span>
                   </span>
                 </div>
               )}
               {error && (
-                <div className="text-rose-600 text-sm">{error}</div>
+                <div className="text-rose-600 dark:text-rose-400 text-sm">{error}</div>
               )}
               <div className="mt-2 flex flex-col xs:flex-row gap-2 w-full">
                 <button
                   type="submit"
                   disabled={saving}
-                  className="w-full xs:w-auto bg-emerald-700 text-white px-3 py-1 rounded-md text-sm font-semibold shadow hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition"
+                  className="w-full xs:w-auto bg-emerald-700 hover:bg-emerald-800 text-white dark:bg-emerald-800 dark:hover:bg-emerald-700 px-4 py-2 rounded-md text-sm font-semibold shadow focus:outline-none focus:ring-2 focus:ring-emerald-400 transition min-h-[40px]"
                 >
                   {saving ? 'Saving...' : 'Save'}
                 </button>
                 <button
                   type="button"
-                  className="w-full xs:w-auto bg-stone-200 text-stone-700 px-3 py-1 rounded-md text-sm font-semibold shadow hover:bg-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-400 transition"
+                  className="w-full xs:w-auto bg-stone-200 hover:bg-stone-300 text-stone-700 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-100 px-4 py-2 rounded-md text-sm font-semibold shadow focus:outline-none focus:ring-2 focus:ring-stone-400 transition min-h-[40px]"
                   onClick={handleCancel}
                   disabled={saving}
                 >
@@ -205,11 +205,11 @@ function TaskCard({ task, className = '', onDelete, onComplete, onUpdate }) {
             </form>
           ) : (
             <>
-              <h2 className="mb-2 text-xl font-bold text-stone-950 truncate" title={title}>{title}</h2>
-              <p className="text-stone-600 whitespace-pre-line break-words text-sm sm:text-base overflow-hidden">{description ? description : 'No description provided.'}</p>
+              <h2 className="mb-2 text-xl font-bold text-stone-950 dark:text-white truncate" title={title}>{title}</h2>
+              <p className="text-stone-600 dark:text-stone-300 whitespace-pre-line break-words text-sm sm:text-base overflow-hidden">{description ? description : 'No description provided.'}</p>
               {formattedDueDate && (
                 <div className="mt-3">
-                  <span className="inline-flex items-center rounded px-2 py-0.5 bg-slate-100 text-slate-700 text-xs font-medium truncate">
+                  <span className="inline-flex items-center rounded px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-medium truncate">
                     Due: <span className="ml-1 font-semibold">{formattedDueDate}</span>
                   </span>
                 </div>
@@ -217,9 +217,12 @@ function TaskCard({ task, className = '', onDelete, onComplete, onUpdate }) {
             </>
           )}
         </div>
-        <div className="flex flex-col gap-2 w-full md:w-auto md:flex-row md:gap-2 md:justify-end md:items-center mt-4 md:mt-0">
+
+        {/* Action & Status section */}
+        <div className="flex flex-wrap gap-2 w-full md:w-auto md:flex-nowrap md:justify-end md:items-center mt-4 md:mt-0">
           {editing ? null : (
-            <div className="flex flex-row flex-wrap gap-2 w-full md:w-auto md:flex-nowrap">
+            <>
+              {/* Priority & Status Badges */}
               <span
                 className={`inline-flex min-h-8 items-center rounded-full px-3 text-sm font-bold max-w-full truncate ${getPriorityClass(
                   priority,
@@ -236,40 +239,40 @@ function TaskCard({ task, className = '', onDelete, onComplete, onUpdate }) {
               >
                 {formatLabel(status)}
               </span>
+              {/* Edit Button */}
               <button
                 type="button"
-                className="w-full md:w-auto mt-2 md:mt-0 inline-flex justify-center items-center bg-blue-600 text-white px-3 py-1 rounded-md text-sm font-medium shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                className="min-h-[40px] flex-1 md:flex-none grow-0 shrink-0 bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-700 dark:hover:bg-blue-600 px-4 py-2 rounded-md text-sm font-medium shadow focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
                 onClick={handleEditClick}
                 aria-label="Edit Task"
               >
                 Edit
               </button>
-            </div>
+              {/* Responsive Delete/Complete Buttons */}
+              {onDelete && (
+                <button
+                  type="button"
+                  onClick={onDelete}
+                  aria-label="Delete Task"
+                  className="min-h-[40px] flex-1 md:flex-none grow-0 shrink-0 bg-red-600 hover:bg-red-700 text-white dark:bg-red-700 dark:hover:bg-red-600 px-4 py-2 rounded-md text-sm font-semibold shadow focus:outline-none focus:ring-2 focus:ring-red-400 transition"
+                >
+                  Delete
+                </button>
+              )}
+              {onComplete && !isCompleted && (
+                <button
+                  type="button"
+                  onClick={onComplete}
+                  aria-label="Mark Complete"
+                  className="min-h-[40px] flex-1 md:flex-none grow-0 shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-700 dark:hover:bg-emerald-600 px-4 py-2 rounded-md text-sm font-semibold shadow focus:outline-none focus:ring-2 focus:ring-emerald-400 transition"
+                >
+                  Mark Complete
+                </button>
+              )}
+            </>
           )}
         </div>
       </div>
-      {onDelete && (
-        <button
-          className="absolute left-4 right-4 top-auto bottom-4 md:top-4 md:bottom-auto md:right-4 md:left-auto bg-rose-600 text-white px-3 py-1 rounded-md text-sm font-semibold shadow hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-400 transition
-          w-full md:w-auto"
-          type="button"
-          onClick={onDelete}
-          aria-label="Delete Task"
-        >
-          Delete
-        </button>
-      )}
-      {onComplete && !isCompleted && !editing && (
-        <button
-          className="absolute left-4 right-4 bottom-4 md:left-auto md:right-4 bg-emerald-700 text-white px-3 py-1 rounded-md text-sm font-semibold shadow hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition
-          w-full md:w-auto"
-          type="button"
-          onClick={onComplete}
-          aria-label="Mark Complete"
-        >
-          Mark Complete
-        </button>
-      )}
     </article>
   )
 }
