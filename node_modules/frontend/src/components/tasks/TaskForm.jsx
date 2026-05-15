@@ -24,6 +24,16 @@ function TaskForm({ onTaskCreated }) {
     }))
   }
 
+  // Handles successful task creation side effects
+  const handleSuccess = (task) => {
+    setFormData(initialFormData)
+    // Ensure callback runs after successful creation
+    if (onTaskCreated) {
+      onTaskCreated(task)
+    }
+    toast.success('Task created successfully!')
+  }
+
   const handleSubmit = async (event) => {
     event.preventDefault()
     setError('')
@@ -36,9 +46,8 @@ function TaskForm({ onTaskCreated }) {
         dueDate: formData.dueDate ? formData.dueDate : undefined,
       }
       const task = await createTask(taskPayload)
-      setFormData(initialFormData)
-      onTaskCreated?.(task)
-      toast.success('Task created successfully!')
+      // Make sure success side effects complete before submitting is set to false
+      handleSuccess(task)
     } catch (apiError) {
       const errorMsg =
         apiError.response?.data?.message || 'Unable to create task. Please try again.'

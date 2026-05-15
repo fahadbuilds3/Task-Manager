@@ -13,6 +13,7 @@ function Dashboard() {
   const [updatingTaskId, setUpdatingTaskId] = useState(null)
   const [filter, setFilter] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
+  const [showTaskForm, setShowTaskForm] = useState(false)
 
   const navigate = useNavigate()
 
@@ -69,6 +70,12 @@ function Dashboard() {
     } finally {
       setUpdatingTaskId(null)
     }
+  }
+
+  // Handler for successful task creation to close the form and update list
+  const handleTaskCreated = async () => {
+    await onUpdate()
+    setShowTaskForm(false)
   }
 
   useEffect(() => {
@@ -142,8 +149,9 @@ function Dashboard() {
         <button
           className="min-h-11 rounded-md bg-emerald-700 px-4 md:px-5 py-2 font-semibold text-xs md:text-sm text-white transition hover:bg-emerald-800 focus:outline-none focus:ring-4 focus:ring-emerald-200 w-full sm:w-auto"
           type="button"
+          onClick={() => setShowTaskForm(v => !v)}
         >
-          New task
+          {showTaskForm ? "Close" : "New task"}
         </button>
       </div>
 
@@ -163,10 +171,19 @@ function Dashboard() {
         </article>
       </div>
 
-      {/* Responsive Task Form */}
-      <div className="w-full max-w-full md:max-w-lg mx-auto">
-        <TaskForm onUpdate={onUpdate} />
-      </div>
+      {/* Responsive Task Form, only show if showTaskForm is true */}
+      {showTaskForm && (
+        <div className="w-full max-w-full md:max-w-lg mx-auto flex flex-col gap-2">
+          <TaskForm onUpdate={handleTaskCreated} />
+          <button
+            type="button"
+            className="mt-1 self-end px-4 py-2 rounded-md bg-stone-200 text-stone-800 hover:bg-stone-300 text-xs md:text-sm font-semibold transition border border-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-300"
+            onClick={() => setShowTaskForm(false)}
+          >
+            Cancel
+          </button>
+        </div>
+      )}
 
       {/* Filter/Search Controls: stack vertically on mobile */}
       <div className="flex flex-col md:flex-row md:justify-between gap-3 items-stretch md:items-end">
